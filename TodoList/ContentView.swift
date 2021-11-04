@@ -49,8 +49,7 @@ struct ContentView: View {
             let task = Task(context: viewContext)
             task.title = title
             task.info = info
-            task.isFavorite = isFavorite
-            task.dateCreated = Date()
+         
             task.priority = selectedPriority.rawValue
             task.dateCreated = Date()
             try viewContext.save()
