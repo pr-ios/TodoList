@@ -18,32 +18,39 @@ enum Priority: String, Identifiable, CaseIterable {
 extension Priority {
     
     var title: String {
-    switch self {
-    case .low:
-        return  "Low"
-    case .medium:
-        return   "Medium"
-    case .high:
-        return  "High"
-        
-    }
+        switch self {
+        case .low:
+            return  "Low"
+        case .medium:
+            return   "Medium"
+        case .high:
+            return  "High"
+            
+        }
         
     }
     
 }
 
 struct ContentView: View {
+    
     @State private var title: String = ""
+    @State private var info: String = ""
+
     @State private var selectedPriority: Priority = .medium
     @Environment(\.managedObjectContext) private var viewContext
     
-    @FetchRequest(entity: Task.entity(), sortDescriptors: [NSSortDescriptor(key: "dateCreated", ascending: false)]) private var allTasks: FetchedResults<Task>
+    @FetchRequest(entity: Task.entity(), sortDescriptors: [NSSortDescriptor(key: "dateCreated", ascending: false)], animation: .default) private var allTasks: FetchedResults<Task>
+    
     private func saveTask() {
         
         do {
             
             let task = Task(context: viewContext)
             task.title = title
+            task.info = info
+            task.isFavorite = isFavorite
+            task.dateCreated = Date()
             task.priority = selectedPriority.rawValue
             task.dateCreated = Date()
             try viewContext.save()
@@ -53,6 +60,7 @@ struct ContentView: View {
             print(error.localizedDescription)
         }
     }
+    
     private func styleForPriority(_ value: String) -> Color {
         let priority = Priority(rawValue: value)
         
@@ -98,13 +106,19 @@ struct ContentView: View {
         }
         
     }
+    
     var body: some View {
+        
         NavigationView {
             
             VStack {
                 
                 TextField("Enter title", text: $title)
                     .textFieldStyle(.roundedBorder)
+                
+                TextField("Enter info", text: $info)
+                    .textFieldStyle(.roundedBorder)
+              
                 Picker("Priority", selection: $selectedPriority) {
                     ForEach(Priority.allCases) { priority in
                         Text(priority.title).tag(priority)
@@ -134,6 +148,8 @@ struct ContentView: View {
                             Spacer().frame(width: 20)
                             
                             Text(task.title ?? "")
+                            Text(task.info ?? "")
+                            
                             Spacer()
                             Image(systemName: task.isFavorite ? "heart.fill": "heart")
                                 .foregroundColor(.red)
@@ -144,8 +160,8 @@ struct ContentView: View {
                         
                         
                     }.onDelete(perform: deleteTask)
-                        
-                
+                    
+                    
                     
                 }
                 
