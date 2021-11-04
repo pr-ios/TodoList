@@ -114,10 +114,8 @@ struct ContentView: View {
                 
                 TextField("Enter title", text: $title)
                     .textFieldStyle(.roundedBorder)
-                
                 TextField("Enter info", text: $info)
                     .textFieldStyle(.roundedBorder)
-              
                 Picker("Priority", selection: $selectedPriority) {
                     ForEach(Priority.allCases) { priority in
                         Text(priority.title).tag(priority)
@@ -140,22 +138,35 @@ struct ContentView: View {
                 List {
                     ForEach(allTasks) { task  in
                         
-                        HStack {
-                            Circle()
-                                .fill(styleForPriority(task.priority!))
-                                .frame(width: 15, height: 15)
-                            Spacer().frame(width: 20)
-                            
-                            Text(task.title ?? "")
-                            Text(task.info ?? "")
-                            
-                            Spacer()
-                            Image(systemName: task.isFavorite ? "heart.fill": "heart")
-                                .foregroundColor(.red)
-                                .onTapGesture {
-                                    updateTask(task)
-                                }
+                        NavigationLink {
+                            HStack {
+                                VStack {
+                                Text (task.title!)
+                                Text (task.info!)
+                                    
+                                }.padding()
+                                
+                                Text(task.priority!)
+                            }
+                        } label: {
+                            HStack {
+                                Circle()
+                                    .fill(styleForPriority(task.priority!))
+                                    .frame(width: 15, height: 15)
+                                Spacer().frame(width: 20)
+                                
+                                Text(task.title ?? "")
+                                Text(task.info ?? "")
+                                
+                                Spacer()
+                                Image(systemName: task.isFavorite ? "heart.fill": "heart")
+                                    .foregroundColor(.red)
+                                    .onTapGesture {
+                                        updateTask(task)
+                                    }
+                            }
                         }
+
                         
                         
                     }.onDelete(perform: deleteTask)
