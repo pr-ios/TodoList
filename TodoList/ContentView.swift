@@ -40,7 +40,7 @@ struct ContentView: View {
     @State private var selectedPriority: Priority = .medium
     @Environment(\.managedObjectContext) private var viewContext
     
-    @FetchRequest(entity: Task.entity(), sortDescriptors: [NSSortDescriptor(key: "dateCreated", ascending: false)], animation: .default) private var allTasks: FetchedResults<Task>
+    @FetchRequest(entity: Task.entity(), sortDescriptors: [NSSortDescriptor(key: "dateCreated", ascending: false)]) private var allTasks: FetchedResults<Task>
     
     private func saveTask() {
         
@@ -94,10 +94,11 @@ struct ContentView: View {
         offsets.forEach { index in
             let task = allTasks[index]
             viewContext.delete(task)
-            
+         
             do {
                 
                 try viewContext.save()
+                
             } catch {
                 
                 print(error.localizedDescription)
@@ -124,16 +125,32 @@ struct ContentView: View {
                     }
                 }.pickerStyle(.segmented)
                 
-                Button("Save") {
-                    
+                
+                
+                Button {
                     saveTask()
+                } label: {
+                    Text("Save")
+                        .padding(10)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
                     
-                }
-                .padding(10)
-                .frame(maxWidth: .infinity)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 10.0, style: .continuous))
+                }      .cornerRadius(10.0)
+
+                
+//                Button("Save") {
+//
+//                    saveTask()
+//
+//                }
+//                .padding(10)
+//                .frame(maxWidth: .infinity)
+//                .background(Color.blue)
+//                .foregroundColor(.white)
+//                .clipShape(RoundedRectangle(cornerRadius: 10.0, style: .continuous))
+                
+//                .cornerRadius(10.0)
                 
                 List {
                     ForEach(allTasks) { task  in
@@ -179,8 +196,8 @@ struct ContentView: View {
             }
             .padding()
             .navigationTitle("All Tasks ")
-            
-        }
+//            .frame(screen.width)
+        }.navigationViewStyle(.stack)
     }
 }
 
